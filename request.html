@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+          integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+          crossorigin="anonymous">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+  <meta name=apple-mobile-web-app-capable content=yes>
+  <meta name=apple-mobile-web-app-status-bar-style content=black>
+  <title>Quota</title>
+</head>
+
+<body>
+
+<div class="wrapper">
+  <div class="quota-widget request-page">
+
+    <p>You received a payment request</p>
+
+    <div class="request-details">
+      <p>Beneficiary</p>
+      <ul>
+      	<li>${name}</li>
+      	<li>${account}</li>
+      </ul>
+      <p>Amount: ${amount}</p>
+      <p>Payment reason</p>
+      <p class="payment-reason">${payment reason}</p>
+    </div>
+
+    <div class="bank-selection">
+      <p>Select your bank to complete the payment</p>
+      <select class="bank-selector" name="bank">
+        <option value="FINECO">Fineco</option>
+        <option value="WIDIBA">Widiba</option>
+        <option value="INTESA">Intesa</option>
+        <option value="UNICREDIT">Unicredit</option>
+        <option value="MEDIOLANUM">Mediolanum</option>
+      </select>
+      <button>Continue</button>
+    </div>
+
+  </div>
+</div>
+
+  <script defer src="https://use.fontawesome.com/releases/v5.0.1/js/all.js"></script>
+
+  <script>
+    $(document).ready(function() {
+        $('.bank-selector').select2({
+            placeholder: 'Select an option'
+        });
+    });
+  </script>
+
+</body>
+
+</html>
