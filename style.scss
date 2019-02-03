@@ -1,9 +1,14 @@
-$widget-width: 320px;
-$widget-height: 568px;
+$widget-width: 100%;
+$widget-height: 100%;
+$widget-min-width: 320px;
+$widget-min-height: 568px;
+$widget-max-width: 400px;
+$widget-max-height: 667px;
 $widget-padding-top: 41px;
 $widget-padding-bottom: 41px;
-$widget-padding-left: 35px;
-$widget-padding-right: 35px;
+$widget-padding-left: 25px;
+$widget-padding-right: 25px;
+
 
 * {
     box-sizing: border-box;
@@ -32,9 +37,9 @@ ul {
 
 .wrapper {
     width: 100%;
-    margin: 2rem auto;
-    @media screen and (max-height: $widget-height) {
-        margin: 0 auto;
+    margin: 0 auto;
+    @media screen and (min-width: $widget-max-width) {
+        margin: 2rem auto;
     }
 }
 
@@ -42,15 +47,22 @@ ul {
     position: relative;
     width: $widget-width;
     height: $widget-height;
+    min-width: $widget-min-width;
+    min-height: $widget-min-height;
+    max-width: $widget-max-width;
+    max-height: $widget-max-height;
     padding: $widget-padding-top $widget-padding-right $widget-padding-bottom $widget-padding-left;
     margin: 0 auto;
-    border: solid 1px lightgray;
-    border-radius: 4px;
+    border: none;
+    @media screen and (min-width: $widget-max-width) {
+        border: solid 1px lightgray;
+        border-radius: 4px;
+    }
 }
 
 button {
     display: block;
-    width: $widget-width - $widget-padding-left - $widget-padding-right;
+    width: 100%;
     padding: 10px;
     margin:5px auto;
     -webkit-user-select: none;
@@ -70,6 +82,15 @@ button:hover {
 
 input, input:focus, textarea, textarea:focus {
     outline: none;
+}
+
+.page-controls {
+    position: absolute;
+    bottom: $widget-padding-bottom;
+    left: 0;
+    width: 100%;
+    padding-left: $widget-padding-left;
+    padding-right: $widget-padding-right;
 }
 
 .request-form {
@@ -108,11 +129,6 @@ input, input:focus, textarea, textarea:focus {
         line-height: 2rem;
         padding: 8px 0px;
     }
-    button {
-        position: absolute;
-        bottom: $widget-padding-bottom;
-        left: $widget-padding-left;
-    }
 }
 
 .sharing-page {
@@ -142,10 +158,6 @@ input, input:focus, textarea, textarea:focus {
 }
 
 .notification-options {
-    position: absolute;
-    bottom: $widget-padding-bottom;
-    left: $widget-padding-left;
-    width: $widget-width - $widget-padding-left - $widget-padding-right;
 
     label {
         display: block;
@@ -186,13 +198,6 @@ input, input:focus, textarea, textarea:focus {
         margin: 1rem auto;
     }
 
-    .bank-selection {
-        position: absolute;
-        bottom: $widget-padding-bottom;
-        left: $widget-padding-left;
-        width: $widget-width - $widget-padding-left - $widget-padding-right;
-    }
-
 }
 
 .bank-not-available-page {
@@ -201,5 +206,26 @@ input, input:focus, textarea, textarea:focus {
         text-align: center;
         margin: 1rem auto 2rem auto;
         color: lightgray;
+    }
+}
+
+.history-page {
+    ul {
+        width: 100%;
+        max-height: $widget-min-height - 150px;
+        overflow: scroll;
+    }
+    li {
+        display: block;
+        width: 100%;
+        margin: 0;
+        margin-bottom: 1rem;
+        :last {
+            margin-bottom: $widget-padding-bottom;
+        }
+        padding: 0.5rem;
+        border: solid 1px lightgray;
+        border-radius: 4px;
+        cursor: pointer;
     }
 }

@@ -7,30 +7,168 @@
   <meta name=apple-mobile-web-app-capable content=yes>
   <meta name=apple-mobile-web-app-status-bar-style content=black>
   <title>Quota</title>
+
+
+  <!-- development version, includes helpful console warnings -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  <!-- production version, optimized for size and speed -->
+  <!--<script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
+
 </head>
 
 <body>
 
 <div class="wrapper">
-  <div class="quota-widget request-form">
 
-    <label class="name" for="name">Your full name/Company name</label>
-    <input name="name" id="name" type="text">
+  <div id="quota-app" class="quota-widget">
 
-    <label for="iban">Your IBAN</label>
-    <input name="iban" id="iban" type="text">
+      <div class="request-form" v-show="showRequestFormPage">
 
-    <label class="amount" for="Amount">Amount</label>
-    <input name="amount" id="amount" type="number" min="0.00" max="1000.00" step="0.01">
+        <label class="name" for="name">Your full name/Company name</label>
+        <input name="name" id="name" type="text" v-model="paymentRequest.beneficiary.name">
 
-    <label for="message">Payment reason (optional)</label>
-    <textarea name="message" id="message" rows="3" maxlength="78"></textarea>
+        <label for="iban">Your IBAN</label>
+        <input name="iban" id="iban" type=" text"v-model="paymentRequest.beneficiary.account">
 
-    <button>Create payment request</button>
-  </div>
-</div>
+        <label class="amount" for="Amount">Amount</label>
+        <input name="amount" id="amount" type="number" min="0.00" max="1000.00" step="0.01" v-model="paymentRequest.amount">
+
+        <label for="message">Payment reason (optional)</label>
+        <textarea name="message" id="message" rows="3" maxlength="78" v-model="paymentRequest.reason"></textarea>
+
+        <div class="page-controls">
+            <button @click="createPaymentRequest">Create payment request</button>
+            <button @click.prevent="showHistory()">History</button>
+        </div>
+
+      </div> <!--end request-form-->
+
+      <div class="sharing-page" v-show="showSharingPage">
+
+        <p>Your payment request for {{paymentRequest.amount}} to {{paymentRequest.beneficiary.name}} ({{paymentRequest.beneficiary.account}}) for "{{paymentRequest.reason}}" is ready</p>
+        <a class="quota-link" href="" title="Click to copy">https://quo.ta/{{paymentRequest.id}}</a>
+        <p>Share this link with the person you request the payment from</p>
+
+        <div class="sharing-options">
+          <span>
+            <i class="fas fa-copy fa-2x"></i>
+          </span>
+          <span>
+            <i class="far fa-envelope fa-2x"></i>
+          </span>
+          <span>
+            <i class="fas fa-comment fa-2x"></i>
+          </span>
+          <span>
+            <i class="far fa-file-pdf fa-2x"></i>
+          </span>
+        </div> <!--end sharing-options-->
+
+        <div class="page-controls notification-options">
+          <label for="email">Leave us your email to get notified when the payment is completed</label>
+          <input name="email" id="email" type="email" placeholder="email@example.com">
+          <button>Submit</button>
+          <button @click.prevent="newRequest()">Create another</button>
+        </div> <!--end notification-options-->
+
+      </div> <!--end sharing-page-->
+
+      <div class="history-page" v-show="showHistoryPage">
+        <ul>
+          <li v-for="request in lastHistory" @click="recoverRequest(request)">
+            <p>{{request.beneficiary.name}}</p>
+            <p>{{request.beneficiary.account}}</p>
+            <p>{{request.amount}}</p>
+            <p>https://quo.ta/{{request.id}}</p>
+          </li>
+        </ul>
+        <div class="page-controls">
+            <button @click.prevent="showRequestForm()">Back</button>
+        </div>
+      </div> <!--end history-page-->
+
+  </div> <!--end quota-app-->
+
+</div> <!--end wrapper-->
 
   <script defer src="https://use.fontawesome.com/releases/v5.0.1/js/all.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 </body>
+
+<script>
+
+class PaymentRequest {
+    constructor() {
+        this.id = '',
+        this.beneficiary = {
+            name: '',
+            account: ''
+        },
+        this.amount = 0.00,
+        this.reason = ''
+    }
+}
+
+let vm = new Vue({
+    el: '#quota-app',
+    data: {
+        paymentRequest: new PaymentRequest(),
+        paymentRequestsHistory: [],
+        currentPage: "request-form-page"
+    },
+    computed: {
+        showRequestFormPage: function() {
+            return this.currentPage == 'request-form-page'
+        },
+        showSharingPage: function() {
+            return this.currentPage == 'sharing-page'
+        },
+        showHistoryPage: function() {
+            return this.currentPage == 'history-page'
+        },
+        lastHistory: function() {
+            return this.paymentRequestsHistory.slice().reverse()
+        }
+    },
+    methods: {
+        showRequestForm: function() {
+            this.currentPage = 'request-form-page'
+        },
+        showSharing: function() {
+            this.currentPage = 'sharing-page'
+        },
+        showHistory: function() {
+            this.currentPage = 'history-page'
+        },
+        createPaymentRequest: function() {
+            this.paymentRequest.id = Math.random().toString(36).substring(7)
+            this.paymentRequestsHistory.push(this.paymentRequest)
+            Cookies.set('paymentRequestsHistory', this.paymentRequestsHistory)
+            console.log(JSON.stringify(this.paymentRequest))
+            this.showSharing()
+        },
+        newRequest: function() {
+            let beneficiary = this.paymentRequest.beneficiary
+            this.paymentRequest = new PaymentRequest()
+            this.paymentRequest.beneficiary = beneficiary
+            console.log(JSON.stringify(this.paymentRequestsHistory))
+            this.showRequestForm()
+        },
+        recoverRequest: function(request) {
+            this.paymentRequest = request
+            this.showRequestForm()
+        }
+    },
+    created: function() {
+        let history = Cookies.getJSON('paymentRequestsHistory')
+        if (history) {
+            this.paymentRequestsHistory = history
+            this.paymentRequest.beneficiary = history[history.length-1].beneficiary
+        }
+    }
+})
+
+</script>
 
 </html>
